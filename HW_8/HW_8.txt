@@ -1,0 +1,121 @@
+--1. Вывести название аудиторий в которых читает лекции преподаватель Edward Hopper
+SELECT DISTINCT LR.Name AS LectureRooms
+FROM LecturesRooms AS LR
+INNER JOIN Schedule AS Shed
+On LR.ID=Shed.LectureRoomID
+INNER JOIN Lectures Lect
+ON Shed.LectureID=Lect.ID
+INNER JOIN Teachers T
+ON Lect.TeacherID=T.ID
+WHERE T.Name='Edward' AND T.Surname ='Hopper';
+
+--2. Вывести фамилии ассистентов читающих лекции в группе F505
+SELECT T.Surname AS AssistSurname
+FROM Assistant AS Assist
+INNER JOIN Teachers T
+ON Assist.TeacherID = T.ID
+INNER JOIN Lectures AS L
+ON T.ID = L.TeacherID
+INNER JOIN GroupsLectures GL
+ON GL.LEctureID = L.ID
+INNER JOIN Groups G
+ON GL.GroupID = G.ID
+WHERE G.Name ='F505';
+
+--3. Вывести дисциплины, которые читает Valentin Strikalo для групп 5-го курса
+
+SELECT Sub.Name AS SubjectName
+FROM Subjects AS Sub
+INNER JOIN Lectures L
+ON Sub.ID=L.SubjectID
+INNER JOIN Teachers T
+ON T.ID = L.TeacherID
+INNER JOIN GroupsLectures GL
+ON GL.LectureID =L.ID
+INNER JOIN Groups G
+ON GL.GroupID=G.ID
+WHERE T.Name='Valentin' AND T.Surname='Strikalo' AND G.Year=5;
+
+--4. Вывести фамилии преподавателей, которые не читают лекции по понедельникам
+SELECT T.Surname AS TeacherSurname
+FROM Teachers T
+INNER JOIN Lectures L
+ON T.ID =L.TeacherID
+INNER JOIN Schedule S
+ON L.ID=S.LectireID
+WHERE S.DayOfWeek =1;
+
+--6. Вывести полные имена преподавателей факультета Computer Science
+-- которые не курируют группы кафедры Software Development
+
+SELECT T.Name + ' '+T.Surname AS TeacherName
+FROM Teachers AS T
+INNER JOIN Lectures AS L
+ON T.ID=L.TeacherID
+INNER JOIN GroupsLectures AS GL
+ON L.ID=GL.LectureID
+INNER JOIN Groups AS G
+ON GL.GroupID=G.ID
+INNER JOIN Departments AS Dep
+ON G.DepartmentID=Dep.ID
+INNER JOIN Faculties AS F
+ON Dep.FacultyID=F.ID
+WHERE F.Name='Computer Science' 
+AND T.ID NOT IN ( SELECT C.TeacherID --NOT IN - вывод предикатом пустышек ( без него - покажет куратора)
+			FROM Curators AS C
+			INNER JOIN GroupsCurators AS GC
+			ON C.ID=GC.CuratorID
+			INNER JOIN Groups AS G
+			ON GC.GroupID=G.ID
+			INNER JOIN Departments AS D
+			ON G.DepartmentID=D.ID
+			WHERE D.Name='Software Development');
+
+--7. Вывести список номеров всех корпусов, которые имеются
+--в таблицах факультетов, кафедр и аудиторий
+
+SELECT D.Building AS NumberBuilding
+FROM Departments AS D
+INNER JOIN Faculties AS F
+ON F.Building=D.Building
+INNER JOIN Groups AS G
+ON G.DepartmentID=D.ID
+INNER JOIN GroupsLectures AS GL
+ON G.ID = GL.GroupID
+INNER JOIN Lectures AS L
+ON L.ID=GL.LectureID
+INNER JOIN Schedule AS Sch
+ON Sch.ID=L.ID
+INNER JOIN LecturesRooms AS LR
+ON LR.ID=Sch.LectureRoomID
+ORDER BY D.Building ASC
+
+--8. Вывести полные имена преподавателей в следующем порядке:ъ
+--деканы факультетов, заведующие кафедрами, преподаватели, кураторы, ассистенты
+
+SELECT T.Name +' '+ T.Surname AS FullName
+FROM ( SELECT T.Name, T.Surname, 1 AS Pers
+		FROM Deans AS D LEFT JOIN Teachers T ON D.TeacherID=T.ID
+		UNION
+		SELECT T.Name, T.Surname, 2 AS Pers
+		FROM Heads AS H LEFT JOIN Teachers T ON H.TeacherID=T.ID
+		UNION
+		SELECT T.Name, T.Surname, 3 AS Pers
+		FROM Teachers AS T1 LEFT JOIN Teachers T ON T1.ID=T.ID
+		UNION
+		SELECT T.Name, T.Surname, 4 AS Pers
+		FROM Curators AS C LEFT JOIN Teachers T ON C.TeacherID=T.ID
+		UNION
+		SELECT T.Name, T.Surname, 5 AS Pers
+		FROM Assistant AS A LEFT JOIN Teachers T ON A.TeacherID=T.ID
+		) T
+		ORDER BY T.Pers, T.Name, T.Surname;
+
+
+--9. Вывести дни недели (без повторений) в которых имеются занятия в аудитория 301 / 104 в корпусе 5
+
+SELECT  DISTINCT S.DayOfWeek AS DaysOfWeek
+FROM LecturesRooms AS LR
+INNER JOIN Schedule AS S
+ON LR.ID=S.LectureRoomID
+WHERE LR.Name IN ('301','104') AND LR.Building=5;
