@@ -1,0 +1,153 @@
+CREATE DATABASE SportsShop;
+GO
+
+USE SportsShop;
+GO
+
+CREATE TABLE Seller (
+ID INT NOT NULL IDENTITY(1,1)PRIMARY KEY(ID),
+NameSoldItem nvarchar(100) NOT NULL check(NameSoldItem !='') ,
+SellingPrice money not null check(SellingPrice>0) default 0,
+Quantity INT NOT NULL CHECK(Quantity >0),
+DateOfSale date NOT NULL CHECK(DateOfSale!>Getdate()),
+SallerName nvarchar(100) not null check(SallerName !=''),
+SallerSurname nvarchar(100) not null check(SallerSurname!=''),
+BuyerName nvarchar(100) not null check(BuyerName !=''),
+BuyerSurname nvarchar(100) not null check(BuyerSurname!=''),
+IsRegister BIT NOT NULL DEFAULT 0,
+SellerID INT NOT NULL 
+);
+
+GO
+
+CREATE TABLE Production (
+ID INT NOT NULL IDENTITY(1,1) PRIMARY KEY(ID),
+Name nvarchar(100) not null CHECK(Name !=''),
+TypeProd nvarchar(24) not null,
+CostPrice money not null check(CostPrice>0) default 0,
+Producer nvarchar(100) not null,
+SellingPrice money not null check(SellingPrice>0) default 0,
+ProdID INT NOT NULL FOREIGN KEY(ProdID) REFERENCES Seller(ID)
+);
+
+GO
+
+CREATE TABLE Employees(
+	ID INT NOT NULL IDENTITY(1,1) PRIMARY KEY(ID),
+	Name nvarchar(100) not null CHECK(Name !=''),
+	Surname nvarchar(100) not null CHECK(Surname !=''),
+	EmploymentDate Date CHECK(EmploymentDate !>Getdate()),
+	Sex CHAR(10) NOT NULL,
+	Salary MONEY NOT NULL CHECK(Salary>0) default 0,
+	EmployID INT NOT NULL FOREIGN KEY(EmployID) REFERENCES Seller(ID)
+);
+
+GO
+
+CREATE TABLE Buyers (
+ID INT NOT NULL IDENTITY(1,1) PRIMARY KEY(ID),
+Name nvarchar(100) not null check(Name !=''),
+Surname nvarchar(100) not null CHECK(Surname !=''),
+Email char(50) NULL,
+Phone nvarchar(15) not null check(Phone!=''),
+Sex CHAR(10) NOT NULL,
+HistoryOfOrders CHAR(50) NULL,
+Discount INT NULL,
+Subs BIT NOT NULL DEFAULT 0,
+BuyerID INT NOT NULL FOREIGN KEY(BuyerID) REFERENCES Seller(ID)
+);
+GO
+--24
+INSERT INTO Seller (NameSoldItem, SellingPrice, Quantity, DateOfSale, SallerName, SallerSurname, BuyerName, BuyerSurname, IsRegister,SellerID) VALUES
+('ADIDAS GAZELLE', 2199, 3, '20.11.2021', 'Владимир','Петренко','Иван','Власов', 1,1)
+,('ADIDAS Samba', 2599, 1, '20.11.2021', 'Владимир','Петренко','Сергей','Конюхов', 1,2)
+,('ADIDAS Superstar', 4799, 2, '19.11.2021', 'Владимир','Петренко','Ксения','Рыбакова', 0,3)
+,('NIKE FORCE', 3599, 2, '19.11.2021', 'Владимир','Петренко','Лилия','Денисова', 1,4)
+,('NIKE AIR MAX 90', 2999, 4, '19.11.2021', 'Владимир','Петренко','Евгений','Багров', 0,5)
+,('NEW BALANCE 488', 1199, 13, '20.11.2021', 'Владимир','Петренко','Федор','Слепаков', 1,6)
+--
+,('NEW BALANCE 505', 2599, 1, '18.11.2021', 'Руслан','Грузднев','Степан','Муратов', 1,7)
+,('NORD FACE WinterProof', 6999, 2, '18.11.2021','Руслан','Грузднев','Григорий','Колесников', 1,8)
+,('Camel Active G2', 5199, 3, '18.11.2021','Руслан','Грузднев','Амелия','Розенштейн', 0,9)
+,('NORD FACE SPR777', 12199, 1, '17.11.2021', 'Руслан','Грузднев','Анастасия','Плюх', 1,10)
+,('LACOSTE', 3500, 3, '17.11.2021', 'Руслан','Грузднев','Иван','Соловьев', 1,11)
+,('LACOSTE', 4799, 2, '17.11.2021', 'Руслан','Грузднев','Карина','Терещенко', 0,12)
+--
+,('FRED PERRY', 2199, 1, '20.11.2021', 'Анна','Коваленко','Кирилл','Носов', 1,13)
+,('FRED PERRY', 2449, 2, '20.11.2021', 'Анна','Коваленко','Леонид','Быков', 0,14)
+,('BEN CHERMAN', 6429, 3, '20.11.2021', 'Анна','Коваленко','Влада','Ударова', 0,15)
+,('BEN CHERMAN', 7699, 1, '21.11.2021', 'Анна','Коваленко','Елизавета','Мартыненко', 1,16)
+,('FILA', 1299, 3, '21.11.2021', 'Анна','Коваленко','Иванна','Есипова', 1,17)
+,('FILA', 1599, 4, '21.11.2021', 'Анна','Коваленко','Иван','Врунов', 1,18)
+--
+,('FILA', 999, 3, '17.11.2021', 'Елена','Голованова','Владислав','Харченко', 1,19)
+,('UMBRO', 4199, 1, '17.11.2021', 'Елена','Голованова','Александр','Шпортило', 0,20)
+,('UMBRO', 2399, 2, '17.11.2021', 'Елена','Голованова','Павел','Телепа', 0,21)
+,('PUMA', 2399, 6, '18.11.2021', 'Елена','Голованова','Юлия','Грищенко', 0,22)
+,('PUMA', 1799, 4, '18.11.2021', 'Елена','Голованова','Юрий','Федорчук', 1,23)
+,('PUMA', 1999, 1, '18.11.2021', 'Елена','Голованова','Александр','Лавриненко', 1,24);
+ 
+ GO
+INSERT INTO Production(Name, TypeProd, CostPrice, Producer, SellingPrice, ProdID) VALUES
+('ADIDAS GAZELLE','Кроссовки',1000,'Indonesia', 2199, 1)
+,('ADIDAS Samba','Кроссовки',1300,'Indonesia', 2599, 2)
+,('ADIDAS Superstar','Кроссовки',2200,'Germany', 4799, 3)
+,('NIKE FORCE','Кроссовки',1700,'USA', 3599, 4)
+,('NIKE AIR MAX 90','Кроссовки',1250,'China', 2999, 5)
+,('NEW BALANCE 488','Кроссовки',450,'China', 1199, 6)
+,('NEW BALANCE 488','Кроссовки',1150,'China', 2599, 7)
+,('NORD FACE WinterProof','Курточка',3550,'Malasia', 6999, 8)
+,('Camel Active G2','Курточка',2550,'Malasia', 5200, 9)
+,('NORD FACE SPR777','Курточка',5550,'Japan', 12199, 10)
+,('Lacost','Футболка',1950,'France', 3500, 11)
+,('Lacost','Футболка',2550,'France', 4799, 12)
+,('FRED PERRY','Футболка',1150,'China', 2199, 13)
+,('FRED PERRY','Футболка',1350,'China', 2449, 14)
+,('BEN CHERMAN','Толстовка', 2800, 'Banglagesh', 6429,15)
+,('BEN CHERMAN','Толстовка', 3300, 'Banglagesh', 7699,16)
+,('FILA','Шорты',499,'China',1299,17)
+,('FILA','Шорты',699,'China',1599,18)
+,('FILA','Шорты',399,'China',999,19)
+
+,('UMBRO','Штаны',999,'England',2399,20)
+,('UMBRO','Костюм',1999,'England',4199,21)
+,('PUMA','Кроссовки',999,'Germany',2399,22)
+,('PUMA','Кроссовки',799,'Germany',1799,23)
+,('PUMA','Кроссовки',599,'Germany',1999,24);
+
+GO
+
+INSERT INTO Employees(Name, Surname, EmploymentDate,Sex,Salary,EmployID) VALUES
+('Владимир','Петренко','01.05.2020','Man',12500,1)
+,('Руслан','Грузднев','14.09.2019','Man',14500,2)
+,('Анна','Коваленко','20.08.2021','Woman',10500,3)
+,('Елена','Голованова','3.11.2021','Woman',8500,4);
+
+GO
+
+INSERT INTO Buyers(Name,Surname,Email,Phone,Sex,HistoryOfOrders,Discount,Subs,BuyerID) VALUES
+('Иван','Власов','vlasovIvan@ukr.net','0678794532','Man','ADIDAS GAZELL',7,1,1)
+,('Сергей','Конюхов','konuh@ukr.net','06787942332','Man','ADIDAS Samba',5,1,2)
+,('Ксения','Рыбакова','ribka@ukr.net','06787942442','Woman','ADIDAS Superstar',0,0,3)
+,('Лилия','Денисова', NULL,'09787565632','Woman','NIKE FORCE',3,1,4)
+,('Евгений','Багров',NULL,'06787942332','Man',NULL,1,0,5)
+,('Федор','Слепаков','slepakov@gmail.com','0995456336','Man','NEW BALANCE 488',5,1,6)
+,('Степан','Муратов','muraDD@i.ua','06896362332','Man',NULL,5,1,7)
+,('Григорий','Колесников','kolesoso@ukr.net','09997942332','Man','NORD FACE WinterProof',10,1,8)
+,('Амелия','Розенштейн',NULL,'0636536987','Woman','Camel Active G2',3,0,9)
+,('Анастасия','Плюх','pluhha@ukr.net','06336942332','Woman','NORD FACE SPR777',7,1,10)
+,('Иван','Соловьев','solovey@ukr.net','06799942332','Man','LACOSTE',3,1,11)
+,('Карина','Терещенко',NULL,'0987774363','Woman',NULL,1,0,12)
+,('Кирилл','Носов','nosov@ukr.net','09395942332','Man','FRED PERRY',5,1,13)
+,('Леонид','Быков',NULL,'0978542982','Man',NULL,1,0,14)
+,('Влада','Ударова',NULL,'0996565665','Woman',NULL,1,1,15)
+,('Елизавета','Мартыненко','ElizMart@ukr.net','0933337733','Woman','BEN CHERMAN',5,1,16)
+,('Иванна','Есипова','esipaaaa@ia.net','09887942666','Woman','FILA ',7,1,17)
+,('Иван','Врунов','vrunnchik@ukr.net','06765942343','Man','FILA',5,1,18)
+,('Владислав','Харченко','ko412h@ukr.net','06787532332','Man','FILA',5,1,19)
+,('Александр','Шпортило','shpotr@ukr.net','06785322666','Man','UMBRO',1,0,20)
+,('Павел','Телепа',NULL,'06787949892','Man',NULL,1,0,21)
+,('Юлия','Грищенко',NULL,'07899842332','Woman',NULL,1,0,22)
+,('Юрий','Федорчук','musorok@gmail.com','0978787656','Man','PUMA',15,1,23)
+,('Александр','Лавриненко','lavrushka@ukr.net','0637336987','Woman','PUMA',10,1,24);
+GO
